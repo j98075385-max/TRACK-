@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HabitBoard</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#090909">
+<style>
+body{background:#090909;color:white;font-family:Arial,sans-serif;padding:20px}
+.card{border:1px solid #9CFF00;border-radius:16px;padding:16px;margin:10px 0}
+.habit{display:flex;justify-content:space-between;background:#111;padding:14px;border-radius:14px;margin:10px 0}
+.dot{width:22px;height:22px;border-radius:50%;background:#333}
+.done{background:#9CFF00}
+</style>
+</head>
+<body>
+<h1>HabitBoard</h1>
+<div class="card">STREAK: 14 DAYS</div>
+<div class="card">DONE TODAY: <span id="count"></span></div>
+<div id="list"></div>
+<button onclick="addHabit()">+ New Habit</button>
+<script>
+let habits=JSON.parse(localStorage.getItem('habits')||'["Exercise","Meditate","Read 30 Min"]');
+let state=JSON.parse(localStorage.getItem('state')||'{}');
+function save(){localStorage.setItem('habits',JSON.stringify(habits));localStorage.setItem('state',JSON.stringify(state));}
+function render(){
+let done=0; let html='';
+habits.forEach(h=>{
+ if(state[h]) done++;
+ html+=`<div class="habit" onclick="toggle('${h}')"><span>${h}</span><div class="dot ${state[h]?'done':''}"></div></div>`;
+});
+document.getElementById('list').innerHTML=html;
+document.getElementById('count').innerText=`${done}/${habits.length}`;
+}
+function toggle(h){state[h]=!state[h];save();render();}
+function addHabit(){let h=prompt('Habit name'); if(h){habits.push(h);save();render();}}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js');}
+render();
+</script>
+</body>
+</html>
